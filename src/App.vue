@@ -1,14 +1,15 @@
 <template>
   <div>
-    黑马头条
-    <span class="toutiao toutiao-gengduo"></span>
-    <van-button type="primary">主要按钮</van-button>
-    <div class="axs">动起来了</div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {}
+  }
+}
 </script>
 
 <style scoped>
