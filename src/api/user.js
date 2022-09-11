@@ -28,3 +28,17 @@ export const sendCodeApi = (mobile) => {
     url: '/v1_0/sms/codes/' + mobile
   })
 }
+
+/**
+ * 获取用户信息
+ * @param {String} token 用户token值
+ * @returns Promise
+ */
+export const getUserIofoApi = (token) => {
+  return request({
+    url: '/v1_0/user',
+    headers: {
+      Authorization: 'Bearer ' + token
+    }
+  })
+}
