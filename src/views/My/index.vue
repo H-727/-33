@@ -118,7 +118,7 @@ export default {
         console.log(data.data)
         this.useriofo = data.data
       } catch (error) {
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 400) {
           this.$toast.fail('用户认证失败，请重新登录')
         } else {
           throw error
