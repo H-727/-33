@@ -17,6 +17,8 @@ request.interceptors.request.use(
     }
     return config
   },
-  function (eeror) {}
+  function (error) {
+    throw error
+  }
 )
 export default request

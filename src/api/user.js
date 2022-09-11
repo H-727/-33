@@ -34,11 +34,11 @@ export const sendCodeApi = (mobile) => {
  * @param {String} token 用户token值
  * @returns Promise
  */
-export const getUserIofoApi = (token) => {
+export const getUserIofoApi = () => {
   return request({
-    url: '/v1_0/user',
-    headers: {
-      Authorization: 'Bearer ' + token
-    }
+    url: '/v1_0/user'
+    // headers: {
+    //   Authorization: 'Bearer ' + token
+    // }
   })
 }

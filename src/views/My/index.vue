@@ -114,7 +114,7 @@ export default {
     async getUserIofo() {
       if (!this.isLogin) return
       try {
-        const { data } = await getUserIofoApi(this.tokenObj.token)
+        const { data } = await getUserIofoApi()
         console.log(data.data)
         this.useriofo = data.data
       } catch (error) {
