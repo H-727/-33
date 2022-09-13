@@ -11,25 +11,41 @@
       <van-tab :title="item.name" v-for="item in channels" :key="item.id">
         <article-list :id="item.id"></article-list>
       </van-tab>
-      <span class="toutiao toutiao-gengduo"></span>
+      <span @click="show = true" class="toutiao toutiao-gengduo"></span>
     </van-tabs>
+    <!-- 弹出层 -->
+    <van-popup
+      v-model="show"
+      closeable
+      close-icon-position="top-left"
+      position="bottom"
+      :style="{ height: '100%' }"
+    >
+      <channel-edit
+        :my-channels="channels"
+        @change-active=";[(show = false), (active = $event)]"
+      ></channel-edit>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import { getChannelAPI } from '@/api'
 import ArticleList from '@/components/ArticleList.vue'
+import ChannelEdit from '@/components/ChannelEdit.vue'
 export default {
-  components: { ArticleList },
+  components: { ArticleList, ChannelEdit },
   created() {
     this.getUserIofo()
   },
   data() {
     return {
       active: 0,
-      channels: []
+      channels: [],
+      show: false
     }
   },
+
   methods: {
     async getUserIofo() {
       try {
@@ -69,6 +85,19 @@ export default {
     color: #fff;
   }
 }
+
+:deep(.van-tabs__content) {
+  height: calc(100vh - 275px);
+  overflow: auto;
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: lawngreen;
+    border-radius: 10px;
+  }
+}
+
 /* tabs导航条样式 */
 :deep(.van-tabs__wrap) {
   padding-right: 66px;

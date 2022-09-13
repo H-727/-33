@@ -34,10 +34,9 @@
 </template>
 
 <script>
+import dayjs from '@/utils/dayjs'
 export default {
-  created() {
-    console.log(this.article)
-  },
+  created() {},
   props: {
     article: {
       type: Object,
@@ -47,7 +46,7 @@ export default {
   computed: {
     label() {
       const { aut_name, comm_count, pubdate } = this.article
-      return `${aut_name} ${comm_count}评论 ${pubdate}`
+      return `${aut_name} ${comm_count}评论 ${dayjs(pubdate).fromNow()}`
     }
   }
 }

@@ -1,10 +1,26 @@
 <template>
-  <div>
-    <article-itme
-      v-for="item in articles"
-      :key="item.art_id"
-      :article="item"
-    ></article-itme>
+  <div class="article">
+    <van-pull-refresh
+      :disabled="disabled"
+      v-model="isLoading"
+      @refresh="getNextPageArticle"
+    >
+      <van-list
+        @load="getNextPageArticle"
+        offset="100"
+        :immediate-check="false"
+        v-model="loading"
+        :finished="finished"
+        finished-text="没有更多了哦~~~"
+        :error.sync="error"
+        error-text="请求失败请点击重试"
+        ><article-itme
+          v-for="item in articles"
+          :key="item.art_id"
+          :article="item"
+        ></article-itme
+      ></van-list>
+    </van-pull-refresh>
   </div>
 </template>
 
@@ -18,7 +34,13 @@ export default {
   },
   data() {
     return {
-      articles: []
+      articles: [],
+      pirtimestamp: '',
+      loading: false,
+      finished: false,
+      error: false,
+      isLoading: false,
+      disabled: false
     }
   },
   created() {
@@ -30,6 +52,7 @@ export default {
       try {
         const { data } = await getArticlesAPI(this.id, +new Date())
         this.articles = data.data.results
+        this.pirtimestamp = data.data.pre_timestamp
       } catch (error) {
         const status = error.response?.status
         if (!error.response || status === 507) {
@@ -37,6 +60,26 @@ export default {
         } else if (status === 400) {
           throw new Error(error.response.data.message)
         }
+      }
+    },
+    async getNextPageArticle() {
+      try {
+        const { data } = await getArticlesAPI(this.id, this.pirtimestamp)
+        if (!data.data.pre_timestamp) {
+          this.finished = true
+          this.disabled = true
+        }
+        if (this.loading) {
+          this.articles.push(...data.data.results)
+        } else {
+          this.articles.unshift(...data.data.results)
+        }
+        this.pirtimestamp = data.data.pre_timestamp
+      } catch (error) {
+        this.error = true
+      } finally {
+        this.loading = false
+        this.isLoading = false
       }
     }
   }
