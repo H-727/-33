@@ -37,6 +37,7 @@
           :key="value.id"
           :text="value.name"
           icon="plus"
+          @click="$emit('add-channel', value)"
         >
         </van-grid-item>
       </van-grid>
@@ -75,11 +76,11 @@ export default {
       const { data } = await getAllChannelAPI()
       this.allChannels = data.data.channels
     },
-    handleMyChannel({ name }, index) {
+    handleMyChannel({ name, id }, index) {
       if (this.isEdit && name !== '推荐') {
-        console.log(132)
+        this.$emit('del-channel', id)
       } else {
-        this.$emit('change-active', index)
+        this.$emit('change-active', id)
       }
     }
   }

@@ -22,21 +22,25 @@
       :style="{ height: '100%' }"
     >
       <channel-edit
+        v-if="show"
         :my-channels="channels"
         @change-active=";[(show = false), (active = $event)]"
+        @del-channel="delChannel"
+        @add-channel="addChannel"
       ></channel-edit>
     </van-popup>
   </div>
 </template>
 
 <script>
-import { getChannelAPI } from '@/api'
+import { getChannelAPI, getDelChannelAPI, AddChannelAPI } from '@/api'
 import ArticleList from '@/components/ArticleList.vue'
 import ChannelEdit from '@/components/ChannelEdit.vue'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   components: { ArticleList, ChannelEdit },
   created() {
-    this.getUserIofo()
+    this.initChannels()
   },
   data() {
     return {
@@ -47,6 +51,55 @@ export default {
   },
 
   methods: {
+    ...mapMutations(['SET_MY_CHANNELS']),
+    async delChannel(id) {
+      try {
+        const newChannels = this.channels.filter((item) => item.id !== id)
+        if (this.isLogin) {
+          await getDelChannelAPI(id)
+        } else {
+          this.SET_MY_CHANNELS(newChannels)
+        }
+
+        this.channels = newChannels
+        this.$toast.success('删除频道成功')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('请登录再删除')
+        } else {
+          throw error
+        }
+      }
+    },
+    initChannels() {
+      if (this.isLogin) {
+        this.getUserIofo()
+      } else {
+        if (this.$store.state.mychannels.length === 0) {
+          this.getUserIofo()
+        } else {
+          this.channels = this.$store.state.mychannels
+        }
+      }
+    },
+    async addChannel(channel) {
+      try {
+        if (this.isLogin) {
+          await AddChannelAPI(channel.id, this.channels.length - 1)
+        } else {
+          this.SET_MY_CHANNELS([...this.channels, channel])
+        }
+
+        this.channels.push(channel)
+        this.$toast.success('添加频道成功~~')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('请登录再删除')
+        } else {
+          throw error
+        }
+      }
+    },
     async getUserIofo() {
       try {
         const { data } = await getChannelAPI()
@@ -60,6 +113,9 @@ export default {
         }
       }
     }
+  },
+  computed: {
+    ...mapGetters(['isLogin'])
   }
 }
 </script>
